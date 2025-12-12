@@ -2,8 +2,8 @@
 #SBATCH --job-name=baseline_O0
 #SBATCH --account=def-account-name  # Replace with your Compute Canada account
 #SBATCH --time=0:30:00
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=16G
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=8G
 #SBATCH --output=/scratch/%u/ift6162-project/baseline_O0/slurm_%j.out
 #SBATCH --error=/scratch/%u/ift6162-project/baseline_O0/slurm_%j.err
 
