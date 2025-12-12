@@ -177,11 +177,7 @@ class DNC():
     def get_qvalues(self,state, neighbors,critic):
         state_replications = torch.tile(state, (len(neighbors), 1))
         neighbors_tmp = torch.tensor(neighbors / (self.config.env.action_space.high - self.config.env.action_space.low),dtype=torch.float32)
-        # Handle case where neighbors is already a tensor
-        if isinstance(neighbors, torch.Tensor):
-            neighbors = neighbors.clone().detach()
-        else:
-            neighbors = torch.tensor(neighbors)
+        neighbors = torch.tensor(neighbors)
         return critic.forward(state_replications, neighbors_tmp), neighbors
 
 

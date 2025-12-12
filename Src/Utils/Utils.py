@@ -338,13 +338,12 @@ class MemoryBuffer:
         else:
             pos = np.random.randint(self.max_len)
 
-        # Handle tensors properly to avoid warnings
-        self.s1[pos] = s1.clone().detach().to(dtype=self.stype) if isinstance(s1, torch.Tensor) else torch.tensor(s1, dtype=self.stype)
-        self.a1[pos] = a1.clone().detach().to(dtype=self.atype) if isinstance(a1, torch.Tensor) else torch.tensor(a1, dtype=self.atype)
-        self.dist[pos] = dist.clone().detach() if isinstance(dist, torch.Tensor) else torch.tensor(dist)
-        self.r1[pos] = r1.clone().detach() if isinstance(r1, torch.Tensor) else torch.tensor(r1)
-        self.s2[pos] = s2.clone().detach().to(dtype=self.stype) if isinstance(s2, torch.Tensor) else torch.tensor(s2, dtype=self.stype)
-        self.done[pos] = done.clone().detach() if isinstance(done, torch.Tensor) else torch.tensor(done)
+        self.s1[pos] = torch.tensor(s1, dtype=self.stype)
+        self.a1[pos] = torch.tensor(a1, dtype=self.atype)
+        self.dist[pos] = torch.tensor(dist)
+        self.r1[pos] = torch.tensor(r1)
+        self.s2[pos] = torch.tensor(s2, dtype=self.stype)
+        self.done[pos] = torch.tensor(done)
 
 class Trajectory:
     """
@@ -372,13 +371,12 @@ class Trajectory:
         if self.ctr == self.max_len:
             raise OverflowError
 
-        # Handle tensors properly to avoid warnings
-        self.s1[self.ctr] = s1.clone().detach().to(dtype=self.stype) if isinstance(s1, torch.Tensor) else torch.tensor(s1, dtype=self.stype)
-        self.a1[self.ctr] = a1.clone().detach().to(dtype=self.atype) if isinstance(a1, torch.Tensor) else torch.tensor(a1, dtype=self.atype)
-        self.dist[self.ctr] = dist.clone().detach() if isinstance(dist, torch.Tensor) else torch.tensor(dist)
-        self.r1[self.ctr] = r1.clone().detach() if isinstance(r1, torch.Tensor) else torch.tensor(r1)
-        self.s2[self.ctr] = s2.clone().detach().to(dtype=self.stype) if isinstance(s2, torch.Tensor) else torch.tensor(s2, dtype=self.stype)
-        self.done[self.ctr] = done.clone().detach() if isinstance(done, torch.Tensor) else torch.tensor(done)
+        self.s1[self.ctr] = torch.tensor(s1, dtype=self.stype)
+        self.a1[self.ctr] = torch.tensor(a1, dtype=self.atype)
+        self.dist[self.ctr] = torch.tensor(dist)
+        self.r1[self.ctr] = torch.tensor(r1)
+        self.s2[self.ctr] = torch.tensor(s2, dtype=self.stype)
+        self.done[self.ctr] = torch.tensor(done)
 
         self.ctr += 1
 
