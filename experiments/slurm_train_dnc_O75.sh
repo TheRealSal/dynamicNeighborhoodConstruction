@@ -4,8 +4,8 @@
 #SBATCH --time=14:00:00
 #SBATCH --cpus-per-task=56
 #SBATCH --mem=64G
-#SBATCH --output=$SCRATCH/ift6162-project/dnc_O75/slurm_%j.out
-#SBATCH --error=$SCRATCH/ift6162-project/dnc_O75/slurm_%j.err
+#SBATCH --output=/scratch/$USER/ift6162-project/dnc_O75/slurm_%j.out
+#SBATCH --error=/scratch/$USER/ift6162-project/dnc_O75/slurm_%j.err
 
 # Load modules (adjust for your cluster)
 module load StdEnv/2023
