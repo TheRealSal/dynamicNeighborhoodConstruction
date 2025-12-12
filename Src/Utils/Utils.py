@@ -217,7 +217,24 @@ def dynamic_load(dir, name, load_class=False):
 
         if len(abs_path) == 0:
             abs_path = search(dir, name).split('\\')[1:]
-        pos = abs_path.index('iclr_finalsubmission')
+        
+        # Try to find the project root folder (either 'iclr_finalsubmission' or 'dynamicNeighborhoodConstruction')
+        project_names = ['iclr_finalsubmission', 'dynamicNeighborhoodConstruction']
+        pos = None
+        for project_name in project_names:
+            if project_name in abs_path:
+                pos = abs_path.index(project_name)
+                break
+        
+        if pos is None:
+            # If neither project name is found, try to find 'Environments' or 'Src' as a fallback
+            if 'Environments' in abs_path:
+                pos = abs_path.index('Environments') - 1
+            elif 'Src' in abs_path:
+                pos = abs_path.index('Src') - 1
+            else:
+                # Last resort: use the first element after the root
+                pos = 0
 
         module_path = '.'.join([str(item) for item in abs_path[pos + 1:]])
         print("Module path: ", module_path, name)
