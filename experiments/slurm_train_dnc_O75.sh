@@ -2,13 +2,18 @@
 #SBATCH --job-name=dnc_O75
 #SBATCH --account=def-account-name  # Replace with your Compute Canada account
 #SBATCH --time=14:00:00
-#SBATCH --cpus-per-task=56
-#SBATCH --mem=64G
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=16G
 #SBATCH --output=/scratch/%u/ift6162-project/dnc_O75/slurm_%j.out
 #SBATCH --error=/scratch/%u/ift6162-project/dnc_O75/slurm_%j.err
 
 # Load modules (adjust for your cluster)
 module load StdEnv/2023
+
+export OMP_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export BLIS_NUM_THREADS=1
 
 # Activate virtual environment
 source ~/ift6162_venv/bin/activate
