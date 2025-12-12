@@ -1,6 +1,7 @@
 from __future__ import print_function
 import numpy as np
 from Src.Utils.Utils import Space, binaryEncoding
+import torch
 
 class JointReplenishment_py(object):
     def __init__(self,
@@ -106,7 +107,11 @@ class JointReplenishment_py(object):
 
         #ordering of new items
         if self.actionLiteral:
-            orderUpTo = np.array(action.numpy()[0]).astype(dtype=np.int32)#only used for evaluation of static policy/actionLiteral
+            # Accept torch.Tensor or list/ndarray
+            if isinstance(action, torch.Tensor):
+                orderUpTo = np.array(action.cpu().numpy()[0]).astype(dtype=np.int32)
+            else:
+                orderUpTo = np.array(action, dtype=np.int32)
         else:
             orderUpTo = self.levels[action].astype(dtype=np.int32)  # Table look up for the impact/effect of the selected action
         orders = (orderUpTo - self.cur_inv).clip(min=0,dtype=np.int32)
