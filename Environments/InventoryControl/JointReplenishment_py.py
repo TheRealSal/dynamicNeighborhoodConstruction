@@ -162,16 +162,16 @@ class JointReplenishment_py(object):
         for t in range(replications):
             rewards = 0
             done = False
-            env.reset()
+            self.reset()
             while not done:
                 action = []
-                for i in range(len(env.cur_inv)):
-                    if env.cur_inv[i] <= s[i%2]:
+                for i in range(len(self.cur_inv)):
+                    if self.cur_inv[i] <= s[i%2]:
                         action.extend([ S[i%2]] )
                     else:
                         action.append( 0 )
                 
-                next_state, r, done, _ = env.step(action=action)
+                next_state, r, done, _ = self.step(action=action)
                 rewards += r
             rewards_list.append(rewards)
         return np.mean(rewards_list)
