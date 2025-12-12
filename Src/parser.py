@@ -73,6 +73,7 @@ class Parser(object):
         # Joint replenishment specific
         parser.add_argument("--commonOrderCosts", default=75, help="common order costs for the inventory env", type=int)
         parser.add_argument("--actionLiteral", default=1, help="mapping return literal action instead of label", type=int)
+        parser.add_argument("--demand_dist", default='standard', choices=['standard', 'heterogeneous'], help="Demand distribution: standard (10/20) or heterogeneous (0.5/20)")
 
         #Jobshop
         parser.add_argument("--n_machines", default=5, help="number of machines for the jobshop env", type=int)
@@ -122,14 +123,14 @@ class Parser(object):
 
     def QAC_parameters(self, parser):
         parser.add_argument("--gamma", default=0.999, help="Discounting factor", type=float)
-        parser.add_argument("--actor_lr", default=1e-2, help="(1e-2) Learning rate of actor", type=float)
-        parser.add_argument("--critic_lr", default=1e-2, help="(1e-2) Learning rate of critic/baseline", type=float)
+        parser.add_argument("--actor_lr", default=1e-4, help="(1e-2) Learning rate of actor", type=float)
+        parser.add_argument("--critic_lr", default=1e-3, help="(1e-2) Learning rate of critic/baseline", type=float)
         parser.add_argument("--state_lr", default=1e-3, help="Learning rate of state features", type=float)
         parser.add_argument("--gauss_variance", default=1, help="Variance for gaussian policy", type=float) # 1 original setting
 
-        parser.add_argument("--hiddenLayerSize", default=32, help="size of hiddenlayer", type=int)
-        parser.add_argument("--hiddenActorLayerSize", default=16, help="size of hiddenlayer", type=int)
-        parser.add_argument("--deepActor", default=False, help="if we want a deep actor", type=self.str2bool)
+        parser.add_argument("--hiddenLayerSize", default=128, help="size of hiddenlayer", type=int)
+        parser.add_argument("--hiddenActorLayerSize", default=64, help="size of hiddenlayer", type=int)
+        parser.add_argument("--deepActor", default=True, help="if we want a deep actor", type=self.str2bool)
 
         parser.add_argument("--actor_scaling_factor_mean", default=1, help="scale output of actor mean by x", type=float)
 
