@@ -11,7 +11,8 @@ class JointReplenishment_py(object):
                  debug=False,
                  max_steps=100,
                  commonOrderCosts = 75,
-                 mappingType ='knn_mapping'
+                 mappingType ='knn_mapping',
+                 demand_dist = 'standard'
                  ):
 
         
@@ -22,6 +23,8 @@ class JointReplenishment_py(object):
             self.actionLiteral = False
         else:
             self.actionLiteral = True
+        
+        self.demand_dist = demand_dist
         
         if self.n_actions > 5 and self.actionLiteral==False:
             print('Action space too large for 1 FLANN dataset, please set actionLiteral to True')
@@ -70,16 +73,30 @@ class JointReplenishment_py(object):
         self.K = -self.commonOrder  #fixed order costs (if K=0, we know the optimal policy)
         
         for i in range(self.n_actions):
-            if np.mod(i,2)==0:
-                self.b[i] = self.b_even
-                self.k[i] = self.k_even
-                self.h[i] = self.h_even
-                self.d_lambda[i] = self.lambda_even
+            if self.demand_dist == 'heterogeneous':
+                # Interleaved Heterogeneity
+                # Even items = FAST (20)
+                # Odd items = SPORADIC (0.5)
+                if i % 2 == 0:
+                    self.d_lambda[i] = 20.0
+                    self.h[i] = -1
+                    self.b[i] = -19
+                else:
+                    self.d_lambda[i] = 0.5
+                    self.h[i] = -1
+                    self.b[i] = -19
             else:
-                self.b[i] = self.b_uneven
-                self.k[i] = self.k_uneven
-                self.h[i] = self.h_uneven
-                self.d_lambda[i] = self.lambda_uneven
+                # --- ORIGINAL LOGIC: Standard ---
+                if np.mod(i,2)==0:
+                    self.b[i] = self.b_even
+                    self.k[i] = self.k_even
+                    self.h[i] = self.h_even
+                    self.d_lambda[i] = self.lambda_even
+                else:
+                    self.b[i] = self.b_uneven
+                    self.k[i] = self.k_uneven
+                    self.h[i] = self.h_uneven
+                    self.d_lambda[i] = self.lambda_uneven
         
        
 
@@ -126,6 +143,8 @@ class JointReplenishment_py(object):
         #sample demand and subtract from inventory
         demand = np.random.poisson(self.d_lambda,self.n_actions)
         self.cur_inv = np.subtract(self.cur_inv,demand)
+
+        stockouts = (self.cur_inv < 0).astype(float) # measure when inventory is negative
         
         #pay holding costs over positive inventory
         reward += np.sum(self.cur_inv.clip(min=0) * self.h)
@@ -136,8 +155,12 @@ class JointReplenishment_py(object):
         # self.update_state()
         self.curr_state = self.make_state()
 
+        info = {
+            'stockouts': stockouts,
+            'mean_stockout_rate': np.mean(stockouts)
+        }
 
-        return self.curr_state.copy(), reward, self.is_terminal(), {'No INFO implemented yet'}
+        return self.curr_state.copy(), reward, self.is_terminal(), info
 
 
     # Normalize such that it works wel with subsequent steps
