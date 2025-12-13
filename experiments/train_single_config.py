@@ -33,7 +33,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
         neighbor_picking: 'SA' or 'greedy'
     """
     print(f"\n{'='*60}")
-    print(f"Training {algorithm.upper()}: O={O}, seed={seed}, items={n_items}")
+    print(f"Training {algorithm.upper()}: O={O}, seed={seed}, items={n_actions}")
     print(f"{'='*60}\n")
     
     # Create parser and override arguments
@@ -89,7 +89,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
         'algorithm': algorithm,
         'O': O,
         'seed': seed,
-        'n_items': n_items,
+        'n_actions': n_actions,
         'mean_cost': mean_cost,
         'std_cost': std_cost,
         'costs': [float(c) for c in eval_costs]
