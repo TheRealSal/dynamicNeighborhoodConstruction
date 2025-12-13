@@ -24,7 +24,7 @@ export BLIS_NUM_THREADS=1
 source ~/ift6162_venv/bin/activate
 
 # Navigate to project directory
-cd $SLURM_SUBMIT_DIR/..
+cd $SLURM_SUBMIT_DIR/../..
 
 # Run training
 python experiments/train_single_config.py \
