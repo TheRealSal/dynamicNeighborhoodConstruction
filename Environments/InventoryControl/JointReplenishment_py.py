@@ -35,7 +35,6 @@ class JointReplenishment_py(object):
         self.lambda_uneven = 10 #optimal s,S = (11,16) for K=0
 
         self.correlation_strength = correlation_strength
-        self.set_demand_covariance()
         
         self.cur_inv = np.full(self.n_actions, 2, dtype=np.int32)
         self.b = np.zeros(self.n_actions, dtype=np.float32)
@@ -56,6 +55,7 @@ class JointReplenishment_py(object):
             self.action_space_matrix = []
         
         self.set_rewards()
+        self.set_demand_covariance()
         self.reset()
 
     def seed(self, seed):
