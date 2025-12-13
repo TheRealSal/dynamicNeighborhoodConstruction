@@ -105,18 +105,21 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_items=2, max_episodes=500
     return mean_cost, std_cost
 
 
-def run_baseline(O, n_items=2, output_dir='$SCRATCH/ift6162-project'):
+def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project'):
     """
     Run baseline (s,S) policy
     
     Args:
         O: Common order cost (K)
+        seed: Random seed
         n_items: Number of items
         output_dir: Directory to save results
     """
     print(f"\n{'='*60}")
-    print(f"Solving Baseline (s,S): O={O}, items={n_items}")
+    print(f"Solving Baseline (s,S): O={O}, seed={seed}, items={n_items}")
     print(f"{'='*60}\n")
+    
+    np.random.seed(seed)
     
     # Solve for optimal (s,S)
     s_list, S_list, _ = solve_independent_sS(
@@ -143,12 +146,13 @@ def run_baseline(O, n_items=2, output_dir='$SCRATCH/ift6162-project'):
     )
     
     # Save results
-    output_path = Path(output_dir) / f'baseline_O{O}'
+    output_path = Path(output_dir) / f'baseline_O{O}' / f'seed{seed}'
     output_path.mkdir(parents=True, exist_ok=True)
     
     results = {
         'algorithm': 'baseline',
         'O': O,
+        'seed': seed,
         'n_items': n_items,
         'mean_cost': float(mean_cost),
         'std_cost': float(std_cost),
@@ -190,7 +194,8 @@ def main():
     args = parser.parse_args()
     
     if args.algorithm == 'baseline':
-        run_baseline(O=args.O, n_items=args.n_items, output_dir=args.output_dir)
+    if args.algorithm == 'baseline':
+        run_baseline(O=args.O, seed=args.seed, n_items=args.n_actions, output_dir=args.output_dir)
     else:
         train_dnc_or_minmax(
             O=args.O,
