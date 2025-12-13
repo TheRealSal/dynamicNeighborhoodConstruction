@@ -68,7 +68,7 @@ class Parser(object):
         parser.add_argument("--constraint", default='hard', help="type of constraint")
 
         parser.add_argument("--smin", default=0, help="minimum integer value", type=int)
-        parser.add_argument("--smax", default=1, help="maximum integer value", type=int) # 66 for inventory
+        parser.add_argument("--smax", default=66, help="maximum integer value", type=int) # 66 for inventory
 
         # Joint replenishment specific
         parser.add_argument("--commonOrderCosts", default=75, help="common order costs for the inventory env", type=int)
