@@ -12,10 +12,10 @@ class JointReplenishment_py(object):
                  max_steps=100,
                  commonOrderCosts = 75,
                  mappingType ='knn_mapping',
-                 demand_dist = 'standard'
+                 demand_dist = 'standard',
+                 correlation_strength = 0.0,
                  ):
 
-        
         self.n_actions = n_items
         self.max_steps=max_steps
         self.commonOrder = commonOrderCosts
@@ -33,6 +33,9 @@ class JointReplenishment_py(object):
         self.s_max = smax # maximu order quantity
         self.lambda_even = 20#20#demand parameter #optimal s,S = (22,28) for K=0
         self.lambda_uneven = 10 #optimal s,S = (11,16) for K=0
+
+        self.correlation_strength = correlation_strength
+        self.set_demand_covariance()
         
         self.cur_inv = np.full(self.n_actions, 2, dtype=np.int32)
         self.b = np.zeros(self.n_actions, dtype=np.float32)
@@ -111,6 +114,31 @@ class JointReplenishment_py(object):
         self.curr_state = self.make_state()
 
         return self.curr_state
+    
+
+    def set_demand_covariance(self):
+        """
+        Builds the covariance matrix for the underlying Log-Normal process.
+        Note: The correlation_strength applies to the Log-Space variables, 
+        not the final integer demand.
+        """
+        # Cast to float to avoid integer math errors
+        target_mean = np.array(self.d_lambda, dtype=float)
+        
+        sigma = 0.5  
+        rho = float(self.correlation_strength)
+        n = self.n_actions
+
+        # Calculate mu for LogNormal to match target mean E[D] = lambda
+        # Formula: E[D] = exp(mu + sigma^2/2)  =>  mu = ln(E[D]) - sigma^2/2
+        self.mu_log = np.log(target_mean + 1e-6) - 0.5 * (sigma ** 2)
+
+        # Build Covariance Matrix
+        # Construct Correlation Matrix: (1-rho)*Identity + rho*Ones
+        corr_matrix = (1 - rho) * np.eye(n) + rho * np.ones((n, n))
+        
+        # Convert to Covariance
+        self.cov_log = (sigma ** 2) * corr_matrix
 
 
     def step(self, action,training=True):
@@ -141,7 +169,18 @@ class JointReplenishment_py(object):
         self.cur_inv = np.add(self.cur_inv, orders)
         
         #sample demand and subtract from inventory
-        demand = np.random.poisson(self.d_lambda,self.n_actions)
+        if self.correlation_strength > 0:
+            # Sample from Multivariate Normal
+            log_demand = np.random.multivariate_normal(self.mu_log, self.cov_log)
+            
+            # Exponentiate to get "Real" Demand (Continuous)
+            continuous_demand = np.exp(log_demand)
+            
+            # Round to nearest integer to get discrete demand (Inventory)
+            demand = np.round(continuous_demand).astype(int)
+        else:
+            demand = np.random.poisson(self.d_lambda, self.n_actions)
+        
         self.cur_inv = np.subtract(self.cur_inv,demand)
 
         stockouts = (self.cur_inv < 0).astype(float) # measure when inventory is negative
