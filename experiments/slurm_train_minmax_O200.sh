@@ -28,6 +28,7 @@ python experiments/train_single_config.py \
     --seed 42 \
     --n_items 20 \
     --max_episodes 30000 \
+    --cooling 0 \
     --output_dir $SCRATCH/ift6162-project
 
 echo "Job completed at $(date)"
