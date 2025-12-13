@@ -197,7 +197,7 @@ def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project', s
 def main():
     parser = argparse.ArgumentParser(description='Train single configuration')
     parser.add_argument('--algorithm', type=str, required=True, 
-                       choices=['dnc', 'minmax', 'baseline'],
+                       choices=['dnc', 'minmax', 'baseline','cma_es'],
                        help='Algorithm to run')
     parser.add_argument('--O', type=int, required=True,
                        help='Common order cost (K)')
