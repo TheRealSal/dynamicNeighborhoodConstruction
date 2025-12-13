@@ -64,7 +64,8 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     config = Config(args)
     
     # Override paths to use scratch directory
-    output_path = Path(output_dir) / f'{algorithm}_O{O}_N{n_actions}_Scale{scale_reward}' / f'seed{seed}'
+    # Override paths to use scratch directory
+    output_path = Path(output_dir) / f'{algorithm}_O{O}_N{n_actions}_Scale{scale_reward}_Dist{demand_dist}' / f'seed{seed}'
     config.paths['experiment'] = str(output_path)
     config.paths['logs'] = str(output_path / 'Logs')
     config.paths['checkpoint'] = str(output_path / 'Checkpoints')
@@ -117,7 +118,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     return mean_cost, std_cost
 
 
-def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project', scale_reward=False):
+def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project', scale_reward=False, demand_dist='standard'):
     """
     Run baseline (s,S) policy
     
@@ -126,10 +127,11 @@ def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project', s
         seed: Random seed
         n_items: Number of items
         output_dir: Directory to save results
-        scale_reward: Whether to scale reward (included for consistency)
+        scale_reward: Whether to scale reward
+        demand_dist: Demand distribution (included for consistency)
     """
     print(f"\n{'='*60}")
-    print(f"Solving Baseline (s,S): O={O}, seed={seed}, items={n_items}, scale={scale_reward}")
+    print(f"Solving Baseline (s,S): O={O}, seed={seed}, items={n_items}, scale={scale_reward}, dist={demand_dist}")
     print(f"{'='*60}\n")
     
     np.random.seed(seed)
@@ -159,7 +161,7 @@ def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project', s
     )
     
     # Save results
-    output_path = Path(output_dir) / f'baseline_O{O}_N{n_items}_Scale{scale_reward}' / f'seed{seed}'
+    output_path = Path(output_dir) / f'baseline_O{O}_N{n_items}_Scale{scale_reward}_Dist{demand_dist}' / f'seed{seed}'
     output_path.mkdir(parents=True, exist_ok=True)
     
     stockouts_raw = infos.get('stockouts', [])
@@ -220,7 +222,7 @@ def main():
     args = parser.parse_args()
     
     if args.algorithm == 'baseline':
-        run_baseline(O=args.O, seed=args.seed, n_items=args.n_actions, output_dir=args.output_dir, scale_reward=args.scale_reward)
+        run_baseline(O=args.O, seed=args.seed, n_items=args.n_actions, output_dir=args.output_dir, scale_reward=args.scale_reward, demand_dist=args.demand_dist)
     else:
         train_dnc_or_minmax(
             O=args.O,
