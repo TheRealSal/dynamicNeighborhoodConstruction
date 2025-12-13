@@ -33,6 +33,6 @@ python experiments/train_single_config.py \
     --seed $SEED \
     --n_actions 20 \
     --demand_dist heterogeneous \
-    --output_dir $SCRATCH/ift6162-project
+    --output_dir $SCRATCH/ift6162-project/heterogeneous_demand 
 
 echo "Job completed at $(date)"

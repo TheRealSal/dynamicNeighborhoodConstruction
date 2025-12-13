@@ -35,6 +35,6 @@ python experiments/train_single_config.py \
     --demand_dist heterogeneous \
     --max_episodes 30000 \
     --neighbor_picking greedy \
-    --output_dir $SCRATCH/ift6162-project
+    --output_dir $SCRATCH/ift6162-project/heterogeneous_demand
 
 echo "Job completed at $(date)"

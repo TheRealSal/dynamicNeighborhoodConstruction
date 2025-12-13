@@ -34,6 +34,6 @@ python experiments/train_single_config.py \
     --n_actions 20 \
     --demand_dist heterogeneous \
     --max_episodes 30000 \
-    --output_dir $SCRATCH/ift6162-project
+    --output_dir $SCRATCH/ift6162-project/heterogeneous_demand
 
 echo "Job completed at $(date)"
