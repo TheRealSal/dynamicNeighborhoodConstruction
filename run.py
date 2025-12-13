@@ -97,6 +97,8 @@ class Solver:
                 # t1 = time()
                 action, a_hat = self.model.get_action(state, training=True)
                 new_state, reward, done, info = self.env.step(action=action)
+                if self.config.scale_reward:
+                    reward /= 1000.0
                 loss_actor,loss_critic=self.model.update(state, action, a_hat, reward, new_state, done)
                 episode_loss_actor.append(loss_actor)
                 episode_loss_critic.append(loss_critic)
@@ -106,7 +108,7 @@ class Solver:
                 if step > self.config.max_steps:
                     break
             self.episode += 1
-
+            print('Episode ' + str(episode) + ' / Total Reward: ' + str(total_r))
             # Track actor and critic loss
             total_loss_actor = total_loss_actor*0.99+0.01*np.average(episode_loss_actor)
             total_loss_actor_history.append(total_loss_actor)

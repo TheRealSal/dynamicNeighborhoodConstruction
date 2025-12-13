@@ -16,6 +16,7 @@ class Parser(object):
         parser.add_argument("--log_output", default='term_file', help="Log all the print outputs",choices=['term_file', 'term', 'file'])
         parser.add_argument("--debug", default=True, type=self.str2bool, help="Debug mode on/off")
         parser.add_argument("--save_model", default=True, type=self.str2bool, help="flag to save model checkpoints")
+        parser.add_argument("--scale_reward", default=False, type=self.str2bool, help="Scale reward by 1000.0")
 
         # For documentation purposes
         now = datetime.now()
