@@ -19,7 +19,7 @@ import json
 
 
 def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5000, 
-                        output_dir='$SCRATCH/ift6162-project', neighbor_picking='SA', demand_dist='standard', scale_reward=False):
+                        output_dir='$SCRATCH/ift6162-project', neighbor_picking='SA', demand_dist='standard', scale_reward=False, demand_correlation=0.0):
     """
     Train DNC or MinMax agent
     
@@ -54,6 +54,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     args.neighbor_picking = neighbor_picking
     args.demand_dist = demand_dist
     args.scale_reward = scale_reward
+    args.demand_correlation = demand_correlation
     
     # Set MinMax parameters if needed
     if algorithm == 'minmax':
@@ -218,6 +219,8 @@ def main():
                        help='Demand distribution: standard (10/20) or heterogeneous (0.5/20)')
     parser.add_argument('--scale_reward', action='store_true',
                        help='Scale reward by 1000')
+    parser.add_argument('--demand_correlation', type=float, default=0.0,
+                       help='Correlation between demands')
     
     args = parser.parse_args()
     
@@ -233,6 +236,7 @@ def main():
             neighbor_picking=args.neighbor_picking,
             demand_dist=args.demand_dist,
             scale_reward=args.scale_reward,
+            demand_correlation=args.demand_correlation,
             output_dir=args.output_dir
         )
 

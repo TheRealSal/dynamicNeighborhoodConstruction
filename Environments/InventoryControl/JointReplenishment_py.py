@@ -13,7 +13,7 @@ class JointReplenishment_py(object):
                  commonOrderCosts = 75,
                  mappingType ='knn_mapping',
                  demand_dist = 'standard',
-                 correlation_strength = 0.0,
+                 demand_correlation = 0.0,
                  ):
 
         self.n_actions = n_items
@@ -34,7 +34,7 @@ class JointReplenishment_py(object):
         self.lambda_even = 20#20#demand parameter #optimal s,S = (22,28) for K=0
         self.lambda_uneven = 10 #optimal s,S = (11,16) for K=0
 
-        self.correlation_strength = correlation_strength
+        self.correlation_strength = demand_correlation
         
         self.cur_inv = np.full(self.n_actions, 2, dtype=np.int32)
         self.b = np.zeros(self.n_actions, dtype=np.float32)
