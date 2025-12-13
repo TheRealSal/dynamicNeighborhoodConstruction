@@ -129,6 +129,7 @@ class Solver:
                     test_reward, step_time, _, _ = self.eval(10)
                 self.model.save()
                 avg_test_reward = np.average(test_reward)
+                print('Episode ' + str(episode) + ' / Avg Test Reward: ' + str(avg_test_reward))
                 std_test_reward = np.std(test_reward)
                 avg_step_time.append(np.average(step_time))
                 test_std.append(std_test_reward)
