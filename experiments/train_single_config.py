@@ -56,7 +56,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     
     # Set MinMax parameters if needed
     if algorithm == 'minmax':
-        #args.SA_search_steps = 0  # This makes it MinMax
+        args.SA_search_steps = 0  # This makes it MinMax
         args.cooling = 0
     
     # Create config
@@ -85,6 +85,13 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     
     mean_cost = float(np.mean(eval_costs))
     std_cost = float(np.std(eval_costs))
+
+    stockouts_raw = infos.get('stockouts', [])
+    stockouts = []
+    for s in stockouts_raw:
+        arr = np.asarray(s, dtype=float)
+        stockouts.append(float(arr) if arr.size == 1 else arr.tolist())
+
     
     # Save evaluation results
     results = {
@@ -95,7 +102,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
         'mean_cost': mean_cost,
         'std_cost': std_cost,
         'costs': [float(c) for c in eval_costs],
-        'stockouts': [float(s) for s in infos.get('stockouts', [])],
+        'stockouts': stockouts,
         'mean_stockout_rate': float(np.mean(infos.get('mean_stockout_rate', [0])))
     }
     
@@ -153,6 +160,12 @@ def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project'):
     output_path = Path(output_dir) / f'baseline_O{O}' / f'seed{seed}'
     output_path.mkdir(parents=True, exist_ok=True)
     
+    stockouts_raw = infos.get('stockouts', [])
+    stockouts = []
+    for s in stockouts_raw:
+        arr = np.asarray(s, dtype=float)
+        stockouts.append(float(arr) if arr.size == 1 else arr.tolist())
+    
     results = {
         'algorithm': 'baseline',
         'O': O,
@@ -163,7 +176,7 @@ def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project'):
         'costs': [float(c) for c in cost_list],
         'optimal_s': s_list,
         'optimal_S': S_list,
-        'stockouts': [float(s) for s in infos.get('stockouts', [])],
+        'stockouts': stockouts,
         'mean_stockout_rate': float(np.mean(infos.get('mean_stockout_rate', [0])))
     }
     
