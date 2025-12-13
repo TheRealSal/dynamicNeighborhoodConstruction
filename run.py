@@ -108,7 +108,7 @@ class Solver:
                 if step > self.config.max_steps:
                     break
             self.episode += 1
-            print('Episode ' + str(episode) + ' / Total Reward: ' + str(total_r))
+            # print('Episode ' + str(episode) + ' / Total Reward: ' + str(total_r))
             # Track actor and critic loss
             total_loss_actor = total_loss_actor*0.99+0.01*np.average(episode_loss_actor)
             total_loss_actor_history.append(total_loss_actor)
@@ -124,7 +124,6 @@ class Solver:
                 np.save(self.config.paths['results'] + "critic_loss", total_loss_critic_history)
                 returns.append(rm)
                 run_time.append((time()-t_init))
-                print('time required for '+str(checkpoint)+' :' +str(time()-t0))
                 if self.config.env_name == 'Recommender_py':
                     test_reward,step_time,_,_=self.eval(10)
                 else:
@@ -132,6 +131,7 @@ class Solver:
                 self.model.save()
                 avg_test_reward = np.average(test_reward)
                 print('Episode ' + str(episode) + ' / Avg Test Reward: ' + str(avg_test_reward))
+                print('time required for '+str(checkpoint)+' :' +str(time()-t0))
                 std_test_reward = np.std(test_reward)
                 avg_step_time.append(np.average(step_time))
                 test_std.append(std_test_reward)
