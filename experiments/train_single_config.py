@@ -194,7 +194,6 @@ def main():
     args = parser.parse_args()
     
     if args.algorithm == 'baseline':
-    if args.algorithm == 'baseline':
         run_baseline(O=args.O, seed=args.seed, n_items=args.n_actions, output_dir=args.output_dir)
     else:
         train_dnc_or_minmax(
