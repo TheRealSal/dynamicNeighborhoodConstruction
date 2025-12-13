@@ -25,10 +25,12 @@ class Solver:
         self.model = config.algo(config=config)
 
     def eval(self, episodes=100):
-        # Evaluate the model
+        # Evaluate themodel
         rewards = []
         steps = []
         step_time = []
+        infos = {} # Key -> List of values
+        
         for episode in range(episodes):
             trajectory = []
             state = np.float32(self.env.reset(training=False))
@@ -42,6 +44,14 @@ class Solver:
                     self.model.weights_changed = False
                 action, dist = self.model.get_action(state,training=False)
                 new_state, reward, done, info = self.env.step(action,training=False)
+                
+                # Collect info
+                if isinstance(info, dict):
+                    for k, v in info.items():
+                        if k not in infos:
+                            infos[k] = []
+                        infos[k].append(v)
+                
                 state = new_state
                 trajectory.append((action, reward))
                 total_r += reward
@@ -49,7 +59,7 @@ class Solver:
                 step_time.append(time()-t1)
             rewards.append(total_r)
             steps.append(step)
-        return rewards, step_time,steps
+        return rewards, step_time, steps, infos
 
     # Main training loop
     def train(self):
@@ -114,9 +124,9 @@ class Solver:
                 run_time.append((time()-t_init))
                 print('time required for '+str(checkpoint)+' :' +str(time()-t0))
                 if self.config.env_name == 'Recommender_py':
-                    test_reward,step_time,_=self.eval(10)
+                    test_reward,step_time,_,_=self.eval(10)
                 else:
-                    test_reward, step_time, _ = self.eval(10)
+                    test_reward, step_time, _, _ = self.eval(10)
                 self.model.save()
                 avg_test_reward = np.average(test_reward)
                 std_test_reward = np.std(test_reward)

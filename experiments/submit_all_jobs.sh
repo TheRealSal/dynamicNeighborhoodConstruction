@@ -22,6 +22,13 @@ sbatch $ACCOUNT_ARG $SCRIPT_DIR/slurm_train_dnc_O0.sh
 sbatch $ACCOUNT_ARG $SCRIPT_DIR/slurm_train_dnc_O75.sh
 sbatch $ACCOUNT_ARG $SCRIPT_DIR/slurm_train_dnc_O200.sh
 
+# Submit DNC Greedy jobs
+echo "Submitting DNC Greedy jobs..."
+sbatch $ACCOUNT_ARG $SCRIPT_DIR/slurm_train_dnc_greedy_O0.sh
+sbatch $ACCOUNT_ARG $SCRIPT_DIR/slurm_train_dnc_greedy_O75.sh
+sbatch $ACCOUNT_ARG $SCRIPT_DIR/slurm_train_dnc_greedy_O200.sh
+
+
 # Submit MinMax jobs
 echo "Submitting MinMax jobs..."
 sbatch $ACCOUNT_ARG $SCRIPT_DIR/slurm_train_minmax_O0.sh

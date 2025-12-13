@@ -78,7 +78,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     
     # Evaluate
     print(f"\nEvaluating {algorithm.upper()}: O={O}, seed={seed}")
-    eval_rewards, _, _ = solver.eval(episodes=100)
+    eval_rewards, _, _, infos = solver.eval(episodes=100)
     eval_costs = [-r for r in eval_rewards]  # Convert rewards to costs
     
     mean_cost = float(np.mean(eval_costs))
@@ -92,7 +92,9 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
         'n_actions': n_actions,
         'mean_cost': mean_cost,
         'std_cost': std_cost,
-        'costs': [float(c) for c in eval_costs]
+        'costs': [float(c) for c in eval_costs],
+        'stockouts': [float(s) for s in infos.get('stockouts', [])],
+        'mean_stockout_rate': float(np.mean(infos.get('mean_stockout_rate', [0])))
     }
     
     results_file = Path(config.paths['results']) / 'evaluation_results.json'
@@ -136,7 +138,7 @@ def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project'):
     print(f"Optimal S: {S_list}")
     
     # Evaluate policy
-    mean_cost, std_cost, cost_list = evaluate_baseline_policy(
+    mean_cost, std_cost, cost_list, infos = evaluate_baseline_policy(
         n_items=n_items,
         K=O,
         s_list=s_list,
@@ -158,7 +160,9 @@ def run_baseline(O, seed=42, n_items=2, output_dir='$SCRATCH/ift6162-project'):
         'std_cost': float(std_cost),
         'costs': [float(c) for c in cost_list],
         'optimal_s': s_list,
-        'optimal_S': S_list
+        'optimal_S': S_list,
+        'stockouts': [float(s) for s in infos.get('stockouts', [])],
+        'mean_stockout_rate': float(np.mean(infos.get('mean_stockout_rate', [0])))
     }
     
     results_file = output_path / 'evaluation_results.json'

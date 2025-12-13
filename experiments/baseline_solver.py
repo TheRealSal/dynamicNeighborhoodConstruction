@@ -111,6 +111,7 @@ def evaluate_baseline_policy(n_items, K, s_list, S_list, max_steps=100,
     )
     
     cost_list = []
+    infos = {}
     
     for episode in range(n_eval_episodes):
         total_cost = 0
@@ -128,10 +129,17 @@ def evaluate_baseline_policy(n_items, K, s_list, S_list, max_steps=100,
             
             next_state, reward, done, info = env.step(action=action)
             total_cost -= reward  # Convert reward (negative) to cost (positive)
+            
+            # Collect info
+            if isinstance(info, dict):
+                for k, v in info.items():
+                    if k not in infos:
+                        infos[k] = []
+                    infos[k].append(v)
         
         cost_list.append(total_cost)
     
-    return np.mean(cost_list), np.std(cost_list), cost_list
+    return np.mean(cost_list), np.std(cost_list), cost_list, infos
 
 
 if __name__ == "__main__":
