@@ -4,8 +4,8 @@
 #SBATCH --time=14:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=8G
-#SBATCH --output=/scratch/%u/ift6162-project/minmax_O75/slurm_%A_%a.out
-#SBATCH --error=/scratch/%u/ift6162-project/minmax_O75/slurm_%A_%a.err
+#SBATCH --output=/scratch/%u/ift6162-project/heterogeneous_demand/minmax_O75/slurm_%A_%a.out
+#SBATCH --error=/scratch/%u/ift6162-project/heterogeneous_demand/minmax_O75/slurm_%A_%a.err
 #SBATCH --array=0-2
 
 # Define seeds
