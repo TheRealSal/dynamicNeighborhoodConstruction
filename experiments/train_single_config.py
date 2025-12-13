@@ -19,7 +19,7 @@ import json
 
 
 def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_items=2, max_episodes=5000, 
-                        output_dir='$SCRATCH/ift6162-project'):
+                        output_dir='$SCRATCH/ift6162-project', neighbor_picking='SA'):
     """
     Train DNC or MinMax agent
     
@@ -30,6 +30,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_items=2, max_episodes=500
         n_items: Number of items
         max_episodes: Training episodes
         output_dir: Directory to save results
+        neighbor_picking: 'SA' or 'greedy'
     """
     print(f"\n{'='*60}")
     print(f"Training {algorithm.upper()}: O={O}, seed={seed}, items={n_items}")
@@ -49,10 +50,12 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_items=2, max_episodes=500
     args.experiment = f'{algorithm}_O{O}'
     args.folder_suffix = f'seed{seed}'
     args.save_count = max(1, max_episodes // 10)
+    args.neighbor_picking = neighbor_picking
     
     # Set MinMax parameters if needed
     if algorithm == 'minmax':
-        args.SA_search_steps = 0  # This makes it MinMax
+        #args.SA_search_steps = 0  # This makes it MinMax
+        args.cooling = 0
     
     # Create config
     config = Config(args)
@@ -173,13 +176,16 @@ def main():
                        help='Common order cost (K)')
     parser.add_argument('--seed', type=int, default=42,
                        help='Random seed (for DNC/MinMax)')
-    parser.add_argument('--n_items', type=int, default=2,
+    parser.add_argument('--n_actions', type=int, default=2,
                        help='Number of items')
-    parser.add_argument('--max_episodes', type=int, default=70000,
+    parser.add_argument('--max_episodes', type=int, default=30000,
                        help='Maximum training episodes')
     parser.add_argument('--output_dir', type=str, 
                        default='$SCRATCH/ift6162-project',
                        help='Output directory for results')
+    parser.add_argument('--neighbor_picking', type=str, default='SA',
+                       choices=['greedy', 'SA'],
+                       help='Neighbor picking strategy for DNC')
     
     args = parser.parse_args()
     
@@ -190,8 +196,9 @@ def main():
             O=args.O,
             algorithm=args.algorithm,
             seed=args.seed,
-            n_items=args.n_items,
+            n_actions=args.n_actions,
             max_episodes=args.max_episodes,
+            neighbor_picking=args.neighbor_picking,
             output_dir=args.output_dir
         )
 
