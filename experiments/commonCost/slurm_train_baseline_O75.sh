@@ -6,11 +6,22 @@
 #SBATCH --mem=4G
 #SBATCH --output=/scratch/%u/ift6162-project/baseline_O75/slurm_%A_%a.out
 #SBATCH --error=/scratch/%u/ift6162-project/baseline_O75/slurm_%A_%a.err
-#SBATCH --array=0-2
+#SBATCH --array=0-11
 
-# Define seeds
+# Define arrays
 SEEDS=(42 43 44)
-SEED=${SEEDS[$SLURM_ARRAY_TASK_ID]}
+ACTIONS=(20 5)
+SCALE_OPTS=("--scale_reward" "")
+
+# Calculate indices
+SEED_IDX=$((SLURM_ARRAY_TASK_ID % 3))
+ACTION_IDX=$(( (SLURM_ARRAY_TASK_ID / 3) % 2 ))
+SCALE_IDX=$(( (SLURM_ARRAY_TASK_ID / 6) % 2 ))
+
+# Get values
+SEED=${SEEDS[$SEED_IDX]}
+N_ACTIONS=${ACTIONS[$ACTION_IDX]}
+SCALE_FLAG=${SCALE_OPTS[$SCALE_IDX]}
 
 # Load modules (adjust for your cluster)
 module load StdEnv/2023
@@ -31,7 +42,8 @@ python experiments/train_single_config.py \
     --algorithm baseline \
     --O 75 \
     --seed $SEED \
-    --n_actions 20 \
+    --n_actions $N_ACTIONS \
+    $SCALE_FLAG \
     --output_dir $SCRATCH/ift6162-project
 
 echo "Job completed at $(date)"
