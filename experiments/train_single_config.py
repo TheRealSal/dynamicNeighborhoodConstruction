@@ -18,7 +18,7 @@ import numpy as np
 import json
 
 
-def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_items=2, max_episodes=5000, 
+def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5000, 
                         output_dir='$SCRATCH/ift6162-project', neighbor_picking='SA'):
     """
     Train DNC or MinMax agent
@@ -27,7 +27,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_items=2, max_episodes=500
         O: Common order cost (K)
         algorithm: 'dnc' or 'minmax'
         seed: Random seed
-        n_items: Number of items
+        n_actions: Number of items
         max_episodes: Training episodes
         output_dir: Directory to save results
         neighbor_picking: 'SA' or 'greedy'
@@ -42,7 +42,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_items=2, max_episodes=500
     
     # Override with experiment settings
     args.env_name = 'JointReplenishment_py'
-    args.n_actions = n_items
+    args.n_actions = n_actions
     args.commonOrderCosts = O
     args.seed = seed
     args.max_episodes = max_episodes
