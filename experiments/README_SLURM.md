@@ -54,7 +54,7 @@ python experiments/train_single_config.py \
     --O 75 \
     --seed 42 \
     --n_items 20 \
-    --max_episodes 70000 \
+    --max_episodes 30000 \
     --output_dir $SCRATCH/ift6162-project
 ```
 
