@@ -19,7 +19,7 @@ import json
 
 
 def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5000, 
-                        output_dir='$SCRATCH/ift6162-project', neighbor_picking='SA'):
+                        output_dir='$SCRATCH/ift6162-project', neighbor_picking='SA', demand_dist='standard'):
     """
     Train DNC or MinMax agent
     
@@ -31,6 +31,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
         max_episodes: Training episodes
         output_dir: Directory to save results
         neighbor_picking: 'SA' or 'greedy'
+        demand_dist: 'standard' or 'heterogeneous'
     """
     print(f"\n{'='*60}")
     print(f"Training {algorithm.upper()}: O={O}, seed={seed}, items={n_actions}")
@@ -51,6 +52,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     args.folder_suffix = f'seed{seed}'
     args.save_count = max(1, max_episodes // 10)
     args.neighbor_picking = neighbor_picking
+    args.demand_dist = demand_dist
     
     # Set MinMax parameters if needed
     if algorithm == 'minmax':
@@ -194,6 +196,9 @@ def main():
     parser.add_argument('--neighbor_picking', type=str, default='SA',
                        choices=['greedy', 'SA'],
                        help='Neighbor picking strategy for DNC')
+    parser.add_argument('--demand_dist', type=str, default='standard',
+                       choices=['standard', 'heterogeneous'],
+                       help='Demand distribution: standard (10/20) or heterogeneous (0.5/20)')
     
     args = parser.parse_args()
     
@@ -207,6 +212,7 @@ def main():
             n_actions=args.n_actions,
             max_episodes=args.max_episodes,
             neighbor_picking=args.neighbor_picking,
+            demand_dist=args.demand_dist,
             output_dir=args.output_dir
         )
 

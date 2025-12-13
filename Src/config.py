@@ -106,7 +106,7 @@ class Config(object):
             return env, False, env.action_space.dtype == np.float32
         elif tag[:18] == "JointReplenishment":
             obj = Utils.dynamic_load(path, tag, load_class=True)
-            env = obj(smin=self.smin,smax=self.smax,n_items=args.n_actions,max_steps=args.max_steps,commonOrderCosts=args.commonOrderCosts,mappingType=self.mapping)
+            env = obj(smin=self.smin,smax=self.smax,n_items=args.n_actions,max_steps=args.max_steps,commonOrderCosts=args.commonOrderCosts,mappingType=self.mapping, demand_dist=args.demand_dist)
             return env, False, env.action_space.dtype == np.float32
         elif tag[:7] == 'JobShop':
             obj = Utils.dynamic_load(path, tag, load_class=True)
