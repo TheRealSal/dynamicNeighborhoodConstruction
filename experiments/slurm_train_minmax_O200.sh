@@ -4,8 +4,13 @@
 #SBATCH --time=14:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=8G
-#SBATCH --output=/scratch/%u/ift6162-project/minmax_O200/slurm_%j.out
-#SBATCH --error=/scratch/%u/ift6162-project/minmax_O200/slurm_%j.err
+#SBATCH --output=/scratch/%u/ift6162-project/minmax_O200/slurm_%A_%a.out
+#SBATCH --error=/scratch/%u/ift6162-project/minmax_O200/slurm_%A_%a.err
+#SBATCH --array=0-2
+
+# Define seeds
+SEEDS=(42 43 44)
+SEED=${SEEDS[$SLURM_ARRAY_TASK_ID]}
 
 # Load modules (adjust for your cluster)
 module load StdEnv/2023
@@ -25,11 +30,9 @@ cd $SLURM_SUBMIT_DIR/..
 python experiments/train_single_config.py \
     --algorithm minmax \
     --O 200 \
-    --seed 42 \
-    --n_items 20 \
+    --seed $SEED \
+    --n_actions 20 \
     --max_episodes 30000 \
-    --cooling 0 \
     --output_dir $SCRATCH/ift6162-project
 
 echo "Job completed at $(date)"
-
