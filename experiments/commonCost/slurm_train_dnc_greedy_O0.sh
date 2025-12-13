@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=dnc_greedy_O0
 #SBATCH --account=def-account-name  # Replace with your Compute Canada account
-#SBATCH --time=14:00:00
+#SBATCH --time=9:00:00
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=8G
+#SBATCH --mem=4G
 #SBATCH --output=/scratch/%u/ift6162-project/dnc_greedy_O0/slurm_%A_%a.out
 #SBATCH --error=/scratch/%u/ift6162-project/dnc_greedy_O0/slurm_%A_%a.err
 #SBATCH --array=0-2
