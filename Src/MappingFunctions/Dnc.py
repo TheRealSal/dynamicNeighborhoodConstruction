@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import pyflann
 from Src.Utils import MathProg
+import cma
 
 # This file implements Dynamic Neighborhood Construction (DNC)
 class DNC():
@@ -75,6 +76,8 @@ class DNC():
         # Search procedure corresponds to simulated annealing
         if config.neighbor_picking == 'greedy':
             self.search = self.greedy_neighbor_picking
+        elif config.neighbor_picking == 'cma_es':
+            self.search = self.search_cma_es
         else:
             self.search = self.simulatedAnnealing
 
@@ -117,6 +120,8 @@ class DNC():
                                           best_action,training)
 
         return best_q, best_action
+    
+
     def simulatedAnnealing(self, k, acceptanceRatio, baseAction, state, critic, k_best_actions,
                            best_q, best_action,training=True):
         while k > 0:
@@ -144,6 +149,87 @@ class DNC():
             k -= self.coolingK
         return best_q, best_action
 
+    # CMA-ES Search Algorithm
+    def search_cma_es(self, k, acceptanceRatio, baseAction, state, critic, k_best_actions,
+                           best_q, best_action, training=True, proto_action=None):
+        """
+        CMA-ES Search Strategy for DNC.
+        Restricted to a local neighborhood around the base action to preserve DNC architecture.
+        """
+        # 1. Center of Search (Discrete Base Action)
+        x0 = baseAction.detach().cpu().numpy().flatten()
+        
+        # 2. Dynamic Population Size
+        N = self.action_dim
+        pop_size = 4 + int(3 * np.log(N))
+        
+        # 3. Define Local Bounds (The Fix for "Local Search")
+        # Instead of global [0, 66], we look at [base-range, base+range]
+        # This respects the DNC design of "refining" the actor's choice.
+        smin_global = self.config.env.action_space.low[0]
+        smax_global = self.config.env.action_space.high[0]
+        p_range = self.perturbation_range # e.g., 10
+        
+        lower_bounds = []
+        upper_bounds = []
+        
+        for i in range(len(x0)):
+            # Local window clipped to global environment limits
+            lb = max(smin_global, x0[i] - p_range)
+            ub = min(smax_global, x0[i] + p_range)
+            lower_bounds.append(lb)
+            upper_bounds.append(ub)
+
+        # 4. Initial Step Size (Sigma)
+        # Use perturb_scaler (default 1.0) as requested.
+        # Since our window is +/- 10, sigma=1.0 covers the space in ~3-4 steps (3-sigma rule).
+        sigma0 = self.perturb_scaler 
+
+        opts = {
+            'verbose': -9,
+            'popsize': pop_size,
+            'maxiter': max(int(self.SA_search_steps), 1),
+            'bounds': [lower_bounds, upper_bounds] # Pass per-variable bounds
+        }
+
+        # Initialize Optimizer
+        es = cma.CMAEvolutionStrategy(x0, sigma0, opts)
+
+        best_q_val = best_q.item() if isinstance(best_q, torch.Tensor) else float(best_q)
+
+        while not es.stop():
+            solutions = es.ask()
+            
+            # Clip solutions to the bounds we defined
+            # CMA-ES asks for points, but we must enforce the hard constraints
+            clipped_solutions = []
+            for sol in solutions:
+                clipped = np.clip(sol, lower_bounds, upper_bounds)
+                clipped_solutions.append(clipped)
+            
+            solutions_tensor = torch.tensor(np.array(clipped_solutions), dtype=torch.float32)
+            
+            # Discretize
+            discrete_actions = torch.round(solutions_tensor)
+            
+            # Evaluate
+            q_values, _ = self.get_qvalues(state, discrete_actions, critic)
+            fitness = -q_values.detach().cpu().numpy().flatten()
+            
+            # Update (No manual cooling! Let CMA-ES adapt sigma itself)
+            es.tell(solutions, fitness)
+            
+            # Track Best
+            min_fit_idx = np.argmin(fitness)
+            current_best_q = -fitness[min_fit_idx]
+            
+            if current_best_q > best_q_val:
+                best_q_val = current_best_q
+                best_action = discrete_actions[min_fit_idx].view(1, -1)
+
+        return torch.tensor(best_q_val, dtype=torch.float32), best_action
+    
+    
     ############################# Greedy Neighbor Picking #################################
     def greedy_neighbor_picking(self, k, acceptanceRatio, baseAction, state, critic, k_best_actions,
                            best_q, best_action,training=True):

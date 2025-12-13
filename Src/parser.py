@@ -107,7 +107,7 @@ class Parser(object):
         parser.add_argument("--a_clip",default=1, help="clipping for minmax", type=float)
         parser.add_argument("--clipped_decimals", default=0, type=int,help="How to clip protoactions for dnc and minmax")
         parser.add_argument("--SA_search_steps", default=1, type=int,help="regulates the number of SA search steps") # 0 --> minmax
-        parser.add_argument("--neighbor_picking", default='SA', type=str, help="greedy or SA") # greedy --> dnc wo sa
+        parser.add_argument("--neighbor_picking", default='SA', type=str, choices=['greedy', 'SA', 'cma_es'], help="greedy, SA, or cma_es")
         parser.add_argument("--perturb_scaler", default=1, type=float,help="amplitude with which we perturb")
         parser.add_argument("--perturbation_range", default=10, type=int, help="number of neighbors = perturbation_range*action_vector_dim*2")
         parser.add_argument("--neighborhood_query", default='dnc', type=str, help="dnc, math_programming, hybrid") # math_programming
