@@ -119,7 +119,6 @@ def benchmark_algorithm(algorithm, O, n_actions, n_episodes=100, neighbor_pickin
     
     print(f"Running {n_episodes} episodes...")
     for episode in range(n_episodes):
-        env.seed(42 + episode)
         episode_time, reward = run_episode(env, model, training=True)
         episode_times.append(episode_time)
         rewards.append(reward)

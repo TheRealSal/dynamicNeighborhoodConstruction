@@ -121,7 +121,6 @@ def benchmark_inference(algorithm, O, n_actions, n_episodes=100, neighbor_pickin
     
     print(f"Running {n_episodes} evaluation episodes...")
     for episode in range(n_episodes):
-        env.seed(42 + episode)
         step_times, reward, num_steps = run_inference_episode(env, model)
         all_step_times.extend(step_times)
         rewards.append(reward)
