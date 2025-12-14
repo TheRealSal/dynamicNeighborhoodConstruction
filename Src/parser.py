@@ -75,6 +75,7 @@ class Parser(object):
         parser.add_argument("--commonOrderCosts", default=75, help="common order costs for the inventory env", type=int)
         parser.add_argument("--actionLiteral", default=1, help="mapping return literal action instead of label", type=int)
         parser.add_argument("--demand_dist", default='standard', choices=['standard', 'heterogeneous'], help="Demand distribution: standard (10/20) or heterogeneous (0.5/20)")
+        parser.add_argument("--demand_correlation", default=0.0, help="Correlation strength between item demands (0.0 to 1.0)", type=float)
 
         #Jobshop
         parser.add_argument("--n_machines", default=5, help="number of machines for the jobshop env", type=int)
