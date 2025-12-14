@@ -51,7 +51,8 @@ class DNC():
         if self.SA_search_steps == 0:
             self.initialK = 0
         else:
-            self.initialK = self.SA_search_steps #  max(int(0.1 * self.perturbation_array.shape[0]),1)
+            # self.initialK = self.SA_search_steps #  max(int(0.1 * self.perturbation_array.shape[0]),1)
+            self.initialK = max(int(0.1 * self.perturbation_array.shape[0]),1)
         self.cooling = config.cooling  # this cooling parameter determines the percentage of cooling for the hamming, num_neighbors, and the K values
         self.coolingK = max(int(self.cooling * self.initialK), 1)
         self.acceptanceCooling = config.acceptanceCooling
