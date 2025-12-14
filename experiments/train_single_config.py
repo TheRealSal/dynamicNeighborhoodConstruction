@@ -19,7 +19,7 @@ import json
 
 
 def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5000, 
-                        output_dir='$SCRATCH/ift6162-project', neighbor_picking='SA', demand_dist='standard', scale_reward=False, demand_correlation=0.0):
+                        output_dir='$SCRATCH/ift6162-project', neighbor_picking='SA', demand_dist='standard', scale_reward=False, demand_correlation=0.0, cooling=0.1):
     """
     Train DNC or MinMax agent
     
@@ -55,6 +55,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     args.demand_dist = demand_dist
     args.scale_reward = scale_reward
     args.demand_correlation = demand_correlation
+    args.cooling = cooling
     
     # Set MinMax parameters if needed
     if algorithm == 'minmax':
@@ -67,7 +68,7 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     # Override paths to use scratch directory
     # Override paths to use scratch directory
     if algorithm == 'dnc':
-        output_path = Path(output_dir) / f'{algorithm}_O{O}_N{n_actions}_Scale{scale_reward}_Dist{demand_dist}_Corr{demand_correlation}_NP{neighbor_picking}' / f'seed{seed}'
+        output_path = Path(output_dir) / f'{algorithm}_O{O}_N{n_actions}_Scale{scale_reward}_Dist{demand_dist}_Corr{demand_correlation}_NP{neighbor_picking}_Cool{cooling}' / f'seed{seed}'
     else:
         output_path = Path(output_dir) / f'{algorithm}_O{O}_N{n_actions}_Scale{scale_reward}_Dist{demand_dist}_Corr{demand_correlation}' / f'seed{seed}'
     config.paths['experiment'] = str(output_path)
@@ -224,6 +225,8 @@ def main():
                        help='Scale reward by 1000')
     parser.add_argument('--demand_correlation', type=float, default=0.0,
                        help='Correlation between demands')
+    parser.add_argument('--cooling', type=float, default=0.1,
+                       help='Cooling parameter for neighborhood construction')
     
     args = parser.parse_args()
     
@@ -240,6 +243,7 @@ def main():
             demand_dist=args.demand_dist,
             scale_reward=args.scale_reward,
             demand_correlation=args.demand_correlation,
+            cooling=args.cooling,
             output_dir=args.output_dir
         )
 
