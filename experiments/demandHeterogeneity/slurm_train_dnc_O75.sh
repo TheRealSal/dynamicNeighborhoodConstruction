@@ -46,6 +46,7 @@ python experiments/train_single_config.py \
     $SCALE_FLAG \
     --demand_dist heterogeneous \
     --max_episodes 30000 \
+    --cooling 0.5 \
     --output_dir $SCRATCH/ift6162-project/heterogeneous_demand
 
 echo "Job completed at $(date)"

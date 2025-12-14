@@ -45,6 +45,7 @@ python experiments/train_single_config.py \
     --n_actions $N_ACTIONS \
     $SCALE_FLAG \
     --max_episodes 30000 \
+    --cooling 0.5 \
     --output_dir $SCRATCH/ift6162-project
 
 echo "Job completed at $(date)"

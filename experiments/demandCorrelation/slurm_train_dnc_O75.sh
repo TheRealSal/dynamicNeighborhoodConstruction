@@ -50,6 +50,7 @@ python experiments/train_single_config.py \
     --demand_dist standard \
     --demand_correlation $CORRELATION \
     --max_episodes 30000 \
+    --cooling 0.5 \
     --output_dir $SCRATCH/ift6162-project/correlated_demand
 
 echo "Job completed at $(date)"
