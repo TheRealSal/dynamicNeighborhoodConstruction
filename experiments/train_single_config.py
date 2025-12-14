@@ -65,7 +65,11 @@ def train_dnc_or_minmax(O, algorithm='dnc', seed=42, n_actions=2, max_episodes=5
     config = Config(args)
     
     # Override paths to use scratch directory
-    output_path = Path(output_dir) / f'{algorithm}_O{O}_N{n_actions}_Scale{scale_reward}_Dist{demand_dist}_Corr{demand_correlation}' / f'seed{seed}'
+    # Override paths to use scratch directory
+    if algorithm == 'dnc':
+        output_path = Path(output_dir) / f'{algorithm}_O{O}_N{n_actions}_Scale{scale_reward}_Dist{demand_dist}_Corr{demand_correlation}_NP{neighbor_picking}' / f'seed{seed}'
+    else:
+        output_path = Path(output_dir) / f'{algorithm}_O{O}_N{n_actions}_Scale{scale_reward}_Dist{demand_dist}_Corr{demand_correlation}' / f'seed{seed}'
     config.paths['experiment'] = str(output_path)
     config.paths['logs'] = str(output_path / 'Logs')
     config.paths['checkpoint'] = str(output_path / 'Checkpoints')
