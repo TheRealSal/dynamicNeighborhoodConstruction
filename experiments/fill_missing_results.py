@@ -16,6 +16,7 @@ from pathlib import Path
 from glob import glob
 import sys
 import torch
+import gc
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -184,20 +185,29 @@ def evaluate_from_checkpoint(seed_path, config_info, n_eval_episodes=100):
         return None
     
     try:
-        # Load the actor model
-        model.actor.load_state_dict(torch.load(actor_checkpoint))
+        # Load the actor model with map_location to handle CPU/GPU differences
+        checkpoint = torch.load(actor_checkpoint, map_location='cpu')
+        model.actor.load_state_dict(checkpoint)
         model.actor.eval()
         print(f"  Loaded checkpoint from: {actor_checkpoint}")
+        
+        # Clear checkpoint from memory
+        del checkpoint
+        torch.cuda.empty_cache() if torch.cuda.is_available() else None
+        gc.collect()
+        
     except Exception as e:
         print(f"  Error loading checkpoint: {e}")
         return None
     
-    # Evaluate model
+    # Evaluate model with gradient disabled to save memory
     print(f"  Running {n_eval_episodes} evaluation episodes...")
     rewards = []
     infos_collection = {}
     
-    for episode in range(n_eval_episodes):
+    # Disable gradient computation to save memory
+    with torch.no_grad():
+      for episode in range(n_eval_episodes):
         state = np.float32(env.reset(training=False))
         total_r = 0
         step = 0
@@ -227,6 +237,10 @@ def evaluate_from_checkpoint(seed_path, config_info, n_eval_episodes=100):
                 break
         
         rewards.append(total_r)
+        
+        # Periodic cleanup every 10 episodes
+        if (episode + 1) % 10 == 0:
+            gc.collect()
     
     # Calculate statistics
     mean_cost = float(np.mean(rewards))
@@ -254,6 +268,11 @@ def evaluate_from_checkpoint(seed_path, config_info, n_eval_episodes=100):
     }
     
     print(f"  Mean Cost: {mean_cost:.2f} ± {std_cost:.2f}")
+    
+    # Clean up memory before returning
+    del model, env
+    torch.cuda.empty_cache() if torch.cuda.is_available() else None
+    gc.collect()
     
     return results
 
@@ -324,6 +343,10 @@ def main():
         
         # Add seed to config_info
         item['config_info']['seed'] = item['seed']
+        
+        # Force garbage collection before each evaluation
+        gc.collect()
+        torch.cuda.empty_cache() if torch.cuda.is_available() else None
         
         results = evaluate_from_checkpoint(
             item['path'],
